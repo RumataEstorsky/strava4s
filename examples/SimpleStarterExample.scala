@@ -35,8 +35,7 @@ object SimpleStarterExample extends IOApp {
         _ <- result match {
           case Right(athlete) =>
             IO.println(s"Hello, ${athlete.firstname.getOrElse("Athlete")}!") >>
-            IO.println(s"You're from ${athlete.city.getOrElse("Unknown")}") >>
-            IO.println(s"Total activities: ${athlete.activity_count.getOrElse(0)}")
+            IO.println(s"You're from ${athlete.city.getOrElse("Unknown")}, ${athlete.country.getOrElse("Unknown")}")
             
           case Left(error) =>
             IO.println(s"Error: ${error.message}") >>
@@ -46,4 +45,3 @@ object SimpleStarterExample extends IOApp {
     }.as(ExitCode.Success)
   }
 }
-

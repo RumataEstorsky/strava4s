@@ -1,7 +1,6 @@
 package examples
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
 import strava.StravaClient
 import strava.core.StravaConfig
 import java.io.File
@@ -54,8 +53,7 @@ object MonthlyStatsExample extends IOApp {
     activityCount: Int,
     totalDistance: Double,
     totalTime: Double,
-    totalElevation: Double,
-    byType: Map[String, Int]
+    totalElevation: Double
   )
 
   private def getMonthStats(client: strava.StravaClient[IO], date: ZonedDateTime): IO[MonthStats] = {
@@ -71,14 +69,12 @@ object MonthlyStatsExample extends IOApp {
         val monthName = date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
         val totalDistance = activities.flatMap(_.distance).sum / 1000.0 // km
         val totalTime = activities.flatMap(_.moving_time).sum / 3600.0 // hours
-        val totalElevation = activities.flatMap(_.total_elevation_gain).sum // meters
-        val byType = activities.groupBy(a => a.`type`.map(_.toString).getOrElse("Unknown"))
-          .view.mapValues(_.size).toMap
+        val totalElevation = activities.flatMap(_.total_elevation_gain).map(_.toDouble).sum // meters
         
-        MonthStats(monthName, activities.size, totalDistance, totalTime, totalElevation, byType)
+        MonthStats(monthName, activities.size, totalDistance, totalTime, totalElevation)
         
       case Left(_) =>
-        MonthStats(date.format(DateTimeFormatter.ofPattern("MMMM yyyy")), 0, 0, 0, 0, Map.empty)
+        MonthStats(date.format(DateTimeFormatter.ofPattern("MMMM yyyy")), 0, 0, 0, 0)
     }
   }
 
@@ -86,13 +82,7 @@ object MonthlyStatsExample extends IOApp {
     IO.println(f"  Activities: ${stats.activityCount}") >>
     IO.println(f"  Distance: ${stats.totalDistance}%.1f km") >>
     IO.println(f"  Time: ${stats.totalTime}%.1f hours") >>
-    IO.println(f"  Elevation: ${stats.totalElevation}%.0f m") >>
-    (if (stats.byType.nonEmpty) {
-      IO.println("  By type:") >>
-      stats.byType.toList.sortBy(-_._2).traverse_ { case (actType, count) =>
-        IO.println(f"    • $actType: $count")
-      }
-    } else IO.unit)
+    IO.println(f"  Elevation: ${stats.totalElevation}%.0f m")
   }
 
   private def compareMonths(current: MonthStats, previous: MonthStats): IO[Unit] = {
@@ -102,7 +92,7 @@ object MonthlyStatsExample extends IOApp {
       } else {
         val change = ((curr - prev) / prev * 100)
         val arrow = if (change > 0) "↑" else if (change < 0) "↓" else "→"
-        val changeStr = f"${math.abs(change)}%.1f%"
+        val changeStr = f"${math.abs(change)}%.1f%%"
         IO.println(f"  $label: $curr%.1f $unit ($arrow $changeStr)")
       }
     }
@@ -113,4 +103,3 @@ object MonthlyStatsExample extends IOApp {
     showChange("Elevation", current.totalElevation, previous.totalElevation, "m")
   }
 }
-

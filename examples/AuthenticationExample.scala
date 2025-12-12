@@ -1,12 +1,10 @@
 package examples
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
 import strava.StravaClient
 import strava.core.{StravaConfig, StravaError}
 
 import java.io.File
-import scala.concurrent.duration._
 
 /**
  * Example demonstrating the OAuth authentication flow
@@ -143,7 +141,7 @@ object AuthenticationExample extends IOApp {
 
       case StravaError.NetworkError(msg, cause) =>
         IO.println(s"Network error: $msg") >>
-        cause.traverse_(t => IO.println(s"   Cause: ${t.getMessage}")) >>
+        cause.fold(IO.unit)(t => IO.println(s"   Cause: ${t.getMessage}")) >>
         IO.println("") >>
         IO.println("Please check your internet connection and try again.")
 
@@ -186,4 +184,3 @@ object AuthenticationExample extends IOApp {
     IO.println("")
   }
 }
-

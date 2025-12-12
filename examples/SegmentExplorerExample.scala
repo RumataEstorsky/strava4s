@@ -33,7 +33,7 @@ object SegmentExplorerExample extends IOApp {
               val name = segment.name.getOrElse("Unnamed")
               val distance = f"${segment.distance.getOrElse(0f) / 1000}%.2f km"
               val elevation = f"${segment.elevation_high.getOrElse(0f) - segment.elevation_low.getOrElse(0f)}%.0f m"
-              val avgGrade = segment.average_grade.map(g => f"${g}%.1f%%").getOrElse("N/A")
+              val avgGrade = segment.average_grade.map(g => f"$g%.1f%%").getOrElse("N/A")
               
               IO.println(f"${idx + 1}%2d. $name") >>
               IO.println(f"    Distance: $distance, Elevation: $elevation, Grade: $avgGrade")
@@ -48,7 +48,7 @@ object SegmentExplorerExample extends IOApp {
         }
         
         // Example: Explore segments in a specific area (San Francisco)
-        _ <- IO.println("🗺️  Exploring Segments (Example: San Francisco):\n")
+        _ <- IO.println("Exploring Segments (Example: San Francisco):\n")
         _ <- IO.println("   Note: Change the bounds parameter to explore your own area")
         _ <- IO.println("   Get bounds from: https://boundingbox.klokantech.com/\n")
         
@@ -61,16 +61,21 @@ object SegmentExplorerExample extends IOApp {
         
         _ <- exploreResult match {
           case Right(explore) =>
-            explore.segments.take(5).zipWithIndex.traverse_ { case (segment, idx) =>
-              val name = segment.name.getOrElse("Unnamed")
-              val distance = f"${segment.distance.getOrElse(0f) / 1000}%.2f km"
-              val avgGrade = segment.avg_grade.map(g => f"${g}%.1f%%").getOrElse("N/A")
-              val climbCategory = segment.climb_category.map(_.toString).getOrElse("0")
-              
-              IO.println(f"${idx + 1}%2d. $name") >>
-              IO.println(f"    Distance: $distance, Grade: $avgGrade, Category: $climbCategory")
-            } >>
-            IO.println("")
+            explore.segments match {
+              case Some(segments) if segments.nonEmpty =>
+                segments.take(5).zipWithIndex.traverse_ { case (segment, idx) =>
+                  val name = segment.name.getOrElse("Unnamed")
+                  val distance = f"${segment.distance.getOrElse(0f) / 1000}%.2f km"
+                  val avgGrade = segment.avg_grade.map(g => f"$g%.1f%%").getOrElse("N/A")
+                  val climbCategory = segment.climb_category.map(_.toString).getOrElse("0")
+                  
+                  IO.println(f"${idx + 1}%2d. $name") >>
+                  IO.println(f"    Distance: $distance, Grade: $avgGrade, Category: $climbCategory")
+                } >>
+                IO.println("")
+              case _ =>
+                IO.println("  No segments found in this area\n")
+            }
             
           case Left(error) =>
             IO.println(s"  Error: ${error.message}\n")
@@ -79,25 +84,27 @@ object SegmentExplorerExample extends IOApp {
         // Get details of first starred segment
         _ <- starredResult match {
           case Right(segments) if segments.nonEmpty =>
-            segments.headOption.flatMap(_.id).traverse_ { segmentId =>
-              for {
-                _ <- IO.println(s"Segment Details (ID: $segmentId):\n")
-                detailsResult <- client.segments.getSegmentById(segmentId)
-                
-                _ <- detailsResult match {
-                  case Right(segment) =>
-                    IO.println(s"  Name: ${segment.name.getOrElse("Unnamed")}") >>
-                    IO.println(s"  Distance: ${segment.distance.map(d => f"${d / 1000}%.2f km").getOrElse("N/A")}") >>
-                    IO.println(s"  Average grade: ${segment.average_grade.map(g => f"$g%.1f%%").getOrElse("N/A")}") >>
-                    IO.println(s"  Maximum grade: ${segment.maximum_grade.map(g => f"$g%.1f%%").getOrElse("N/A")}") >>
-                    IO.println(s"  Elevation gain: ${segment.total_elevation_gain.map(e => f"$e%.0f m").getOrElse("N/A")}") >>
-                    IO.println(s"  Athlete count: ${segment.athlete_count.getOrElse(0)}") >>
-                    IO.println(s"  Effort count: ${segment.effort_count.getOrElse(0)}")
-                    
-                  case Left(error) =>
-                    IO.println(s"  Error: ${error.message}")
-                }
-              } yield ()
+            segments.headOption.flatMap(_.id) match {
+              case Some(segmentId) =>
+                for {
+                  _ <- IO.println(s"Segment Details (ID: $segmentId):\n")
+                  detailsResult <- client.segments.getSegmentById(segmentId)
+                  
+                  _ <- detailsResult match {
+                    case Right(segment) =>
+                      IO.println(s"  Name: ${segment.name.getOrElse("Unnamed")}") >>
+                      IO.println(s"  Distance: ${segment.distance.map(d => f"${d / 1000}%.2f km").getOrElse("N/A")}") >>
+                      IO.println(s"  Average grade: ${segment.average_grade.map(g => f"$g%.1f%%").getOrElse("N/A")}") >>
+                      IO.println(s"  Maximum grade: ${segment.maximum_grade.map(g => f"$g%.1f%%").getOrElse("N/A")}") >>
+                      IO.println(s"  Elevation gain: ${segment.total_elevation_gain.map(e => f"$e%.0f m").getOrElse("N/A")}") >>
+                      IO.println(s"  Athlete count: ${segment.athlete_count.getOrElse(0)}") >>
+                      IO.println(s"  Effort count: ${segment.effort_count.getOrElse(0)}")
+                      
+                    case Left(error) =>
+                      IO.println(s"  Error: ${error.message}")
+                  }
+                } yield ()
+              case None => IO.unit
             }
           case _ => IO.unit
         }
@@ -112,4 +119,3 @@ object SegmentExplorerExample extends IOApp {
     }.as(ExitCode.Success)
   }
 }
-

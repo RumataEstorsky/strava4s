@@ -10,6 +10,8 @@ lazy val root = (project in file("."))
   .settings(
     name := "strava4s",
     libraryDependencies ++= circe ++ cats ++ http ++ logging ++ testDependencies,
+    // Include examples directory in source paths
+    Compile / unmanagedSourceDirectories += baseDirectory.value / "examples",
     // Tests are only run for Scala 2.13.x due to compatibility issues with Scala 3.x
     Test / skip := {
       CrossVersion.partialVersion(scalaVersion.value) match {

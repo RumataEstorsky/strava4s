@@ -1,7 +1,6 @@
 package examples
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
 import strava.StravaClient
 import strava.core.StravaConfig
 import java.io.{File, PrintWriter}
@@ -46,7 +45,7 @@ object ExportActivitiesExample extends IOApp {
                 val writer = new PrintWriter(outputFile)
                 try {
                   // CSV Header
-                  writer.println("Date,Name,Type,Distance (km),Time (min),Pace (min/km),Elevation (m),Avg HR,Max HR,Calories,Kudos,Moving Time (min)")
+                  writer.println("Date,Name,Distance (km),Time (min),Pace (min/km),Elevation (m),Kudos,Moving Time (min)")
                   
                   // Write each activity
                   activities.foreach { activity =>
@@ -54,20 +53,16 @@ object ExportActivitiesExample extends IOApp {
                       .map(_.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                       .getOrElse("")
                     val name = activity.name.getOrElse("").replace(",", ";") // Escape commas
-                    val actType = activity.`type`.map(_.toString).getOrElse("")
                     val distance = activity.distance.map(_ / 1000).getOrElse(0f)
                     val time = activity.elapsed_time.map(_ / 60.0).getOrElse(0.0)
                     val pace = if (distance > 0) (time / distance) else 0.0
                     val elevation = activity.total_elevation_gain.getOrElse(0f)
-                    val avgHr = activity.average_heartrate.map(_.toString).getOrElse("")
-                    val maxHr = activity.max_heartrate.map(_.toString).getOrElse("")
-                    val calories = activity.calories.map(_.toString).getOrElse("")
                     val kudos = activity.kudos_count.getOrElse(0)
                     val movingTime = activity.moving_time.map(_ / 60.0).getOrElse(0.0)
                     
                     writer.println(
-                      s"$date,$name,$actType,${f"$distance%.2f"},${f"$time%.1f"},${f"$pace%.2f"}," +
-                      s"${f"$elevation%.0f"},$avgHr,$maxHr,$calories,$kudos,${f"$movingTime%.1f"}"
+                      s"$date,$name,${f"$distance%.2f"},${f"$time%.1f"},${f"$pace%.2f"}," +
+                      s"${f"$elevation%.0f"},$kudos,${f"$movingTime%.1f"}"
                     )
                   }
                 } finally {
@@ -102,4 +97,3 @@ object ExportActivitiesExample extends IOApp {
     }.as(ExitCode.Success)
   }
 }
-

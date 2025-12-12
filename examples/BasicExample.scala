@@ -3,11 +3,10 @@ package examples
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.all._
 import strava.StravaClient
-import strava.core.{StravaConfig, StravaError}
+import strava.core.StravaConfig
 
 import java.io.File
 import java.time.ZonedDateTime
-import scala.util.control.NonFatal
 
 /**
  * Basic example demonstrating common Strava API operations
@@ -42,8 +41,8 @@ object BasicExample extends IOApp {
         athleteResult <- client.athletes.getLoggedInAthlete()
         _ <- athleteResult match {
           case Right(athlete) =>
-            IO.println(s"Logged in as: ${athlete.firstname.getOrElse("Unknown")} ${athlete.lastname.getOrElse("")}")
-            IO.println(s"  Location: ${athlete.city.getOrElse("Unknown")}, ${athlete.country.getOrElse("Unknown")}")
+            IO.println(s"Logged in as: ${athlete.firstname.getOrElse("Unknown")} ${athlete.lastname.getOrElse("")}") >>
+            IO.println(s"  Location: ${athlete.city.getOrElse("Unknown")}, ${athlete.country.getOrElse("Unknown")}") >>
             IO.println(s"  Premium: ${athlete.premium.getOrElse(false)}\n")
           case Left(error) =>
             IO.println(s"Failed to get athlete: ${error.message}\n")
@@ -75,9 +74,9 @@ object BasicExample extends IOApp {
           case Right(activities) =>
             val totalDistance = activities.flatMap(_.distance).sum / 1000
             val totalTime = activities.flatMap(_.moving_time).sum / 3600.0
-            IO.println(s"Last 7 days summary:")
-            IO.println(f"  Activities: ${activities.size}")
-            IO.println(f"  Total distance: $totalDistance%.2f km")
+            IO.println(s"Last 7 days summary:") >>
+            IO.println(f"  Activities: ${activities.size}") >>
+            IO.println(f"  Total distance: $totalDistance%.2f km") >>
             IO.println(f"  Total time: $totalTime%.2f hours\n")
           case Left(error) =>
             IO.println(s"Failed to get week activities: ${error.message}\n")
@@ -85,13 +84,12 @@ object BasicExample extends IOApp {
 
         // Get athlete stats
         _ <- IO.println("Fetching athlete statistics...")
-        statsResult <- athleteResult match {
+        _ <- athleteResult match {
           case Right(athlete) =>
             athlete.id.map { id =>
               client.athletes.getStats(id).flatMap {
-                case Right(stats) =>
-                  IO.println(s"All-time statistics:")
-                  // Note: stats structure depends on ActivityStats model
+                case Right(_) =>
+                  IO.println(s"All-time statistics:") >>
                   IO.println(s"  Stats retrieved successfully\n")
                 case Left(error) =>
                   IO.println(s"Failed to get stats: ${error.message}\n")
@@ -141,50 +139,4 @@ object BasicExample extends IOApp {
       IO.println("Configuration validated\n")
     }
   }
-
-  private def handleError(error: StravaError, context: String): IO[Unit] = {
-    error match {
-      case StravaError.AuthenticationError(msg) =>
-        IO.println(s"Authentication error in $context: $msg") >>
-        IO.println("   Please check your credentials and re-authenticate")
-      
-      case StravaError.RateLimitError(msg, retryAfter) =>
-        IO.println(s"Rate limit exceeded in $context: $msg") >>
-        retryAfter.traverse_(seconds => 
-          IO.println(s"   Retry after $seconds seconds")
-        )
-      
-      case StravaError.NotFoundError(msg) =>
-        IO.println(s"Resource not found in $context: $msg")
-      
-      case StravaError.NetworkError(msg, cause) =>
-        IO.println(s"Network error in $context: $msg") >>
-        cause.traverse_(t => IO.println(s"   Cause: ${t.getMessage}"))
-      
-      case StravaError.DecodingError(msg, _) =>
-        IO.println(s"Failed to parse response in $context: $msg") >>
-        IO.println("   This might indicate an API change. Please report this issue.")
-      
-      case other =>
-        IO.println(s"Error in $context: ${other.message}")
-    }
-  }
-
-  private def formatDistance(meters: Float): String = f"${meters / 1000}%.2f km"
-  
-  private def formatTime(seconds: Int): String = {
-    val hours = seconds / 3600
-    val minutes = (seconds % 3600) / 60
-    if (hours > 0) f"${hours}h ${minutes}min" else f"${minutes}min"
-  }
-
-  private def formatPace(distanceMeters: Float, timeSeconds: Int): String = {
-    if (distanceMeters > 0) {
-      val paceSecondsPerKm = (timeSeconds / (distanceMeters / 1000)).toInt
-      val minutes = paceSecondsPerKm / 60
-      val seconds = paceSecondsPerKm % 60
-      f"$minutes:$seconds%02d min/km"
-    } else "N/A"
-  }
 }
-
