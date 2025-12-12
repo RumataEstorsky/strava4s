@@ -21,7 +21,7 @@ case class DetailedActivity(
   /* The identifier provided at upload time */
   external_id: Option[String] = None,
   /* The identifier of the upload that resulted in this activity */
-  upload_id: Option[String] = None,
+  upload_id: Option[Long] = None,
   athlete: Option[MetaAthlete] = None,
   /* The name of the activity */
   name: Option[String] = None,
