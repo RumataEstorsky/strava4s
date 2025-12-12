@@ -15,7 +15,7 @@ sbt compile
 sbt test
 
 # To explicitly test with Scala 2.13
-sbt ++2.13.17 test
+sbt ++2.13.18 test
 
 # Format code
 sbt scalafmt
@@ -53,7 +53,7 @@ sbt "testOnly strava.models.JsonParsingSpec"
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make your changes following our standards
 4. Add tests for new functionality
-5. Ensure all tests pass: `sbt ++2.13.17 test` (tests only run on Scala 2.13.x)
+5. Ensure all tests pass: `sbt ++2.13.18 test` (tests only run on Scala 2.13.x)
 6. Format code: `sbt scalafmt`
 7. Update documentation
 8. Commit with clear messages
@@ -244,7 +244,7 @@ Closes #42
 
 1. **Update documentation** if needed
 2. **Add tests** for new functionality
-3. **Ensure tests pass**: `sbt ++2.13.17 test` (Scala 2.13 only)
+3. **Ensure tests pass**: `sbt ++2.13.18 test` (Scala 2.13 only)
 4. **Format code**: `sbt scalafmt`
 5. **Update CHANGELOG.md**
 6. **Create PR** with clear description
@@ -268,7 +268,7 @@ How was this tested?
 ## Checklist
 - [ ] Tests added/updated (Scala 2.13.x)
 - [ ] Documentation updated
-- [ ] All tests pass (`sbt ++2.13.17 test`)
+- [ ] All tests pass (`sbt ++2.13.18 test`)
 - [ ] Code formatted
 - [ ] CHANGELOG.md updated
 ```

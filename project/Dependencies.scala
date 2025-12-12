@@ -8,7 +8,7 @@ object Dependencies {
     val catsEffect = "3.6.3"
     val cats = "2.13.0"
     val slf4j = "2.0.17"
-    val logback = "1.5.19"
+    val logback = "1.5.22"
   }
 
   val circe = Seq(
