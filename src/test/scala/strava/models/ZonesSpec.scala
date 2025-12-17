@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class ZonesSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-zones-getloggedinathletezones.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val zones = parsed.value.asArray.get
     zones should not be empty
@@ -160,7 +160,7 @@ class ZonesSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-activity-zones-getzonesbyactivityid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val zones = parsed.value.asArray.get
     zones.foreach { zone =>

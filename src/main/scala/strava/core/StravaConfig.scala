@@ -1,6 +1,6 @@
 package strava.core
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 /**
  * Configuration for the Strava API client
@@ -22,18 +22,15 @@ case class StravaConfig(
   enableRateLimiting: Boolean = true
 )
 
-object StravaConfig {
+object StravaConfig:
   /**
    * Create config from environment variables
    * Expects STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET
    */
-  def fromEnv(): Either[StravaError, StravaConfig] = {
-    for {
+  def fromEnv(): Either[StravaError, StravaConfig] =
+    for
       clientId <- sys.env.get("STRAVA_CLIENT_ID")
         .toRight(StravaError.ConfigurationError("STRAVA_CLIENT_ID environment variable not set"))
       clientSecret <- sys.env.get("STRAVA_CLIENT_SECRET")
         .toRight(StravaError.ConfigurationError("STRAVA_CLIENT_SECRET environment variable not set"))
-    } yield StravaConfig(clientId, clientSecret)
-  }
-}
-
+    yield StravaConfig(clientId, clientSecret)

@@ -15,6 +15,8 @@ package strava.models.api
 case class SummarySegment(
   /* The unique identifier of this segment */
   id: Option[Long] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None,
   /* The name of this segment */
   name: Option[String] = None,
   activity_type: Option[SummarySegmentEnums.ActivityType] = None,
@@ -42,6 +44,10 @@ case class SummarySegment(
   country: Option[String] = None,
   /* Whether this segment is private. */
   `private`: Option[Boolean] = None,
+  /* Whether this segment is hazardous. */
+  hazardous: Option[Boolean] = None,
+  /* Whether the authenticated athlete has starred this segment. */
+  starred: Option[Boolean] = None,
   athlete_pr_effort: Option[SummaryPRSegmentEffort] = None,
   athlete_segment_stats: Option[SummarySegmentEffort] = None
 )

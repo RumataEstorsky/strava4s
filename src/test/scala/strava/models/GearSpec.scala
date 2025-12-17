@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class GearSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-equipment-getgearbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val gear = parsed.value.asObject.get
     

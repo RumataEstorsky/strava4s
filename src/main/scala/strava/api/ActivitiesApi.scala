@@ -1,17 +1,17 @@
 package strava.api
 
 import cats.effect.Sync
-import io.circe.generic.auto._
 import strava.core.StravaError
 import strava.http.HttpClient
-import strava.models._
-import strava.models.api._
+import strava.models.api.*
+import strava.models.given
+import strava.models.api.codecs.given
 import java.time.ZonedDateTime
 
 /**
  * API for activity-related endpoints
  */
-class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
+class ActivitiesApi[F[_]](httpClient: HttpClient[F])(using F: Sync[F]):
 
   /**
    * Get logged-in athlete's activities
@@ -25,27 +25,23 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
     after: Option[Long] = None,
     page: Int = 1,
     perPage: Int = 30
-  ): F[Either[StravaError, List[SummaryActivity]]] = {
+  ): F[Either[StravaError, List[SummaryActivity]]] =
     val params = Map(
       "page" -> page.toString,
       "per_page" -> Math.min(perPage, 200).toString
     ) ++ before.map("before" -> _.toString) ++ after.map("after" -> _.toString)
 
     httpClient.get[List[SummaryActivity]]("athlete/activities", params)
-  }
 
-  /**
-   * Get activities by date range
-   */
+  /** Get activities by date range */
   def getActivitiesByDateRange(
     from: ZonedDateTime,
     to: ZonedDateTime,
     perPage: Int = 200
-  ): F[Either[StravaError, List[SummaryActivity]]] = {
+  ): F[Either[StravaError, List[SummaryActivity]]] =
     val fromEpoch = from.toInstant.getEpochSecond
     val toEpoch = to.toInstant.getEpochSecond
     getLoggedInAthleteActivities(Some(toEpoch), Some(fromEpoch), 1, perPage)
-  }
 
   /**
    * Get detailed activity by ID
@@ -55,10 +51,9 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
   def getActivityById(
     id: Long,
     includeAllEfforts: Boolean = false
-  ): F[Either[StravaError, DetailedActivity]] = {
+  ): F[Either[StravaError, DetailedActivity]] =
     val params = Map("include_all_efforts" -> includeAllEfforts.toString)
     httpClient.get[DetailedActivity](s"activities/$id", params)
-  }
 
   /**
    * Get activity comments
@@ -70,10 +65,9 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
     id: Long,
     page: Int = 1,
     perPage: Int = 30
-  ): F[Either[StravaError, List[Comment]]] = {
+  ): F[Either[StravaError, List[Comment]]] =
     val params = Map("page" -> page.toString, "per_page" -> perPage.toString)
     httpClient.get[List[Comment]](s"activities/$id/comments", params)
-  }
 
   /**
    * Get activity kudoers
@@ -85,26 +79,23 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
     id: Long,
     page: Int = 1,
     perPage: Int = 30
-  ): F[Either[StravaError, List[SummaryAthlete]]] = {
+  ): F[Either[StravaError, List[SummaryAthlete]]] =
     val params = Map("page" -> page.toString, "per_page" -> perPage.toString)
     httpClient.get[List[SummaryAthlete]](s"activities/$id/kudos", params)
-  }
 
   /**
    * Get activity laps
    * @param id Activity ID
    */
-  def getLapsByActivityId(id: Long): F[Either[StravaError, List[Lap]]] = {
+  def getLapsByActivityId(id: Long): F[Either[StravaError, List[Lap]]] =
     httpClient.get[List[Lap]](s"activities/$id/laps")
-  }
 
   /**
    * Get activity zones
    * @param id Activity ID
    */
-  def getZonesByActivityId(id: Long): F[Either[StravaError, List[ActivityZone]]] = {
+  def getZonesByActivityId(id: Long): F[Either[StravaError, List[ActivityZone]]] =
     httpClient.get[List[ActivityZone]](s"activities/$id/zones")
-  }
 
   /**
    * Update activity by ID
@@ -114,9 +105,8 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
   def updateActivityById(
     id: Long,
     updatable: UpdatableActivity
-  ): F[Either[StravaError, DetailedActivity]] = {
+  ): F[Either[StravaError, DetailedActivity]] =
     httpClient.put[DetailedActivity, UpdatableActivity](s"activities/$id", updatable)
-  }
 
   /**
    * Create a manual activity
@@ -134,7 +124,7 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
     elapsedTime: Int,
     description: Option[String] = None,
     distance: Option[Float] = None
-  ): F[Either[StravaError, DetailedActivity]] = {
+  ): F[Either[StravaError, DetailedActivity]] =
     val params = Map(
       "name" -> name,
       "type" -> activityType,
@@ -146,7 +136,6 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
       "activities",
       params
     )
-  }
 
   /**
    * Fetch all activities for the logged-in athlete (handles pagination automatically)
@@ -160,17 +149,13 @@ class ActivitiesApi[F[_]: Sync](httpClient: HttpClient[F]) {
     after: Option[Long] = None,
     perPage: Int = 200,
     maxPages: Int = 100
-  ): F[Either[StravaError, List[SummaryActivity]]] = {
+  ): F[Either[StravaError, List[SummaryActivity]]] =
     Pagination.fetchAll[F, SummaryActivity](
       (page, perPage) => getLoggedInAthleteActivities(before, after, page, perPage),
       perPage,
       maxPages
     )
-  }
-}
 
-object ActivitiesApi {
+object ActivitiesApi:
   def apply[F[_]: Sync](httpClient: HttpClient[F]): ActivitiesApi[F] =
     new ActivitiesApi[F](httpClient)
-}
-

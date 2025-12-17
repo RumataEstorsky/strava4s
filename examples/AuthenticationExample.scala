@@ -10,36 +10,34 @@ import java.io.File
  * Example demonstrating the OAuth authentication flow
  * with comprehensive error handling and user guidance
  */
-object AuthenticationExample extends IOApp {
+object AuthenticationExample extends IOApp:
 
-  override def run(args: List[String]): IO[ExitCode] = {
-    program.as(ExitCode.Success).handleErrorWith { error =>
+  override def run(args: List[String]): IO[ExitCode] =
+    program.as(ExitCode.Success).handleErrorWith: error =>
       IO.println(s"Fatal error: ${error.getMessage}") >>
       IO.println("Please check your configuration and try again.").as(ExitCode.Error)
-    }
-  }
 
-  def program: IO[Unit] = {
+  def program: IO[Unit] =
     val config = StravaConfig(
       clientId = sys.env.getOrElse("STRAVA_CLIENT_ID", "your-client-id"),
       clientSecret = sys.env.getOrElse("STRAVA_CLIENT_SECRET", "your-client-secret")
     )
 
-    val tokenFile = new File("strava-token.json")
+    val tokenFile = File("strava-token.json")
     val redirectUri = "http://localhost:8080/callback"
 
-    for {
+    for
       _ <- IO.println("=== Strava OAuth Authentication ===\n")
       _ <- validateConfig(config)
       _ <- checkTokenFile(tokenFile)
       _ <- IO.println("")
 
-      _ <- StravaClient.resource[IO](config, tokenFile).use { client =>
-        IO.delay(tokenFile.exists()).flatMap { existingToken =>
-          if (existingToken) {
+      _ <- StravaClient.resource[IO](config, tokenFile).use: client =>
+        IO.delay(tokenFile.exists()).flatMap: existingToken =>
+          if existingToken then
             // Test existing token
             IO.println("Testing existing authentication token...\n") >>
-            client.athletes.getLoggedInAthlete().flatMap {
+            client.athletes.getLoggedInAthlete().flatMap:
               case Right(athlete) =>
                 val name = s"${athlete.firstname.getOrElse("Unknown")} ${athlete.lastname.getOrElse("")}"
                 IO.println(s"Successfully authenticated as: $name") >>
@@ -54,8 +52,7 @@ object AuthenticationExample extends IOApp {
                 IO.println("") >>
                 IO.println("Suggestion: Delete the token file and re-authenticate:") >>
                 IO.println(s"  rm ${tokenFile.getAbsolutePath}")
-            }
-          } else {
+          else
             // Perform OAuth flow
             val authUrl = client.auth.authorizationUrl(
               redirectUri = redirectUri,
@@ -64,15 +61,15 @@ object AuthenticationExample extends IOApp {
 
             printAuthInstructions(authUrl, redirectUri) >>
             IO.print("Enter authorization code: ") >>
-            IO.readLine.flatMap { code =>
-              if (code.trim.isEmpty) {
+            IO.readLine.flatMap: code =>
+              if code.trim.isEmpty then
                 IO.println("") >>
                 IO.println("No code provided. Exiting.") >>
                 IO.println("   Run this example again when you have the authorization code.")
-              } else {
+              else
                 IO.println("") >>
                 IO.println("Exchanging authorization code for access token...") >>
-                client.auth.exchangeToken(code.trim, redirectUri).flatMap {
+                client.auth.exchangeToken(code.trim, redirectUri).flatMap:
                   case Right(token) =>
                     val expiresInHours = token.expiresIn / 3600
                     IO.println("") >>
@@ -88,19 +85,12 @@ object AuthenticationExample extends IOApp {
                   case Left(error) =>
                     IO.println("") >>
                     handleAuthError(error)
-                }
-              }
-            }
-          }
-        }
-      }
-    } yield ()
-  }
+    yield ()
 
   // Helper methods
 
-  private def validateConfig(config: StravaConfig): IO[Unit] = {
-    if (config.clientId == "your-client-id" || config.clientSecret == "your-client-secret") {
+  private def validateConfig(config: StravaConfig): IO[Unit] =
+    if config.clientId == "your-client-id" || config.clientSecret == "your-client-secret" then
       IO.println("") >>
       IO.println("ERROR: Strava API credentials not configured!") >>
       IO.println("") >>
@@ -111,24 +101,16 @@ object AuthenticationExample extends IOApp {
       IO.println("   export STRAVA_CLIENT_SECRET='your-client-secret'") >>
       IO.println("3. Run this example again") >>
       IO.println("") >>
-      IO.raiseError(new IllegalArgumentException("Missing Strava API credentials"))
-    } else {
-      IO.println("Configuration validated\n")
-    }
-  }
+      IO.raiseError(IllegalArgumentException("Missing Strava API credentials"))
+    else IO.println("Configuration validated\n")
 
-  private def checkTokenFile(tokenFile: File): IO[Unit] = {
-    IO.delay(tokenFile.exists()).flatMap { exists =>
-      if (exists) {
-        IO.println(s"Token file found at: ${tokenFile.getAbsolutePath}")
-      } else {
-        IO.println(s"Token file will be created at: ${tokenFile.getAbsolutePath}")
-      }
-    }
-  }
+  private def checkTokenFile(tokenFile: File): IO[Unit] =
+    IO.delay(tokenFile.exists()).flatMap: exists =>
+      if exists then IO.println(s"Token file found at: ${tokenFile.getAbsolutePath}")
+      else IO.println(s"Token file will be created at: ${tokenFile.getAbsolutePath}")
 
-  private def handleAuthError(error: StravaError): IO[Unit] = {
-    error match {
+  private def handleAuthError(error: StravaError): IO[Unit] =
+    error match
       case StravaError.AuthenticationError(msg) =>
         IO.println(s"Authentication failed: $msg") >>
         IO.println("") >>
@@ -156,10 +138,8 @@ object AuthenticationExample extends IOApp {
         IO.println("") >>
         IO.println("If this persists, please file an issue at:") >>
         IO.println("https://github.com/vsvechikhin/strava4s/issues")
-    }
-  }
 
-  private def printAuthInstructions(authUrl: String, redirectUri: String): IO[Unit] = {
+  private def printAuthInstructions(authUrl: String, redirectUri: String): IO[Unit] =
     IO.println("") >>
     IO.println("═══════════════════════════════════════════════════════════") >>
     IO.println("  Strava OAuth Authorization") >>
@@ -182,5 +162,3 @@ object AuthenticationExample extends IOApp {
     IO.println("") >>
     IO.println("═══════════════════════════════════════════════════════════") >>
     IO.println("")
-  }
-}

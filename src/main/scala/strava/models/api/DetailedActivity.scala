@@ -12,12 +12,12 @@
 package strava.models.api
 
 import java.time.OffsetDateTime
-import strava.models.api.ActivityType._
-import strava.models.api.SportType._
 
 case class DetailedActivity(
   /* The unique identifier of the activity */
   id: Option[Long] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None,
   /* The identifier provided at upload time */
   external_id: Option[String] = None,
   /* The identifier of the upload that resulted in this activity */
@@ -45,6 +45,8 @@ case class DetailedActivity(
   start_date_local: Option[OffsetDateTime] = None,
   /* The timezone of the activity */
   timezone: Option[String] = None,
+  /* The offset from UTC time in seconds */
+  utc_offset: Option[Int] = None,
   /* A pair of latitude/longitude coordinates, represented as an array of 2 floating point numbers. */
   start_latlng: Option[Seq[Float]] = None,
   /* A pair of latitude/longitude coordinates, represented as an array of 2 floating point numbers. */
@@ -86,6 +88,8 @@ case class DetailedActivity(
   hide_from_home: Option[Boolean] = None,
   /* The id of the gear for the activity */
   gear_id: Option[String] = None,
+  /* Whether this activity was created from an accepted tag */
+  from_accepted_tag: Option[Boolean] = None,
   /* The total work done in kilojoules during this activity. Rides only */
   kilojoules: Option[Float] = None,
   /* Average power output in watts during this activity. Rides only */
@@ -102,6 +106,20 @@ case class DetailedActivity(
   gear: Option[SummaryGear] = None,
   /* The number of kilocalories consumed during this activity */
   calories: Option[Float] = None,
+  /* Whether the activity has heartrate data */
+  has_heartrate: Option[Boolean] = None,
+  /* The heart rate of the athlete during this activity. In BPM */
+  average_heartrate: Option[Float] = None,
+  /* The maximum heart rate of the athlete during this activity. In BPM */
+  max_heartrate: Option[Float] = None,
+  /* The average cadence during this activity */
+  average_cadence: Option[Float] = None,
+  /* The average temperature during this activity */
+  average_temp: Option[Int] = None,
+  /* The number of PRs gained during this activity */
+  pr_count: Option[Int] = None,
+  /* The suffer score of the activity */
+  suffer_score: Option[Int] = None,
   segment_efforts: Option[Seq[DetailedSegmentEffort]] = None,
   /* The name of the device used to record the activity */
   device_name: Option[String] = None,
@@ -112,7 +130,13 @@ case class DetailedActivity(
   /* The splits of this activity in imperial units (for runs) */
   splits_standard: Option[Seq[Split]] = None,
   laps: Option[Seq[Lap]] = None,
-  best_efforts: Option[Seq[DetailedSegmentEffort]] = None
+  best_efforts: Option[Seq[DetailedSegmentEffort]] = None,
+  /* The partner brand tag */
+  partner_brand_tag: Option[String] = None,
+  /* Whether the athlete has opted out of segment leaderboards */
+  segment_leaderboard_opt_out: Option[Boolean] = None,
+  /* Whether the athlete has opted out of leaderboards */
+  leaderboard_opt_out: Option[Boolean] = None
 )
 
 object DetailedActivityEnums {

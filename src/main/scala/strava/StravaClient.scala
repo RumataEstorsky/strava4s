@@ -1,10 +1,10 @@
 package strava
 
 import cats.effect.{Async, Resource}
-import cats.syntax.all._
+import cats.syntax.all.*
 import sttp.client3.SttpBackend
 import sttp.client3.httpclient.cats.HttpClientCatsBackend
-import strava.api._
+import strava.api.*
 import strava.auth.{AuthManager, TokenStorage}
 import strava.core.{StravaConfig, StravaError}
 import strava.http.{HttpClient, RateLimiter}
@@ -23,11 +23,11 @@ import java.io.File
  *     clientSecret = "your-client-secret"
  *   )
  *   
- *   StravaClient.resource[IO](config, new File("token.json")).use { client =>
- *     for {
+ *   StravaClient.resource[IO](config, File("token.json")).use { client =>
+ *     for
  *       athlete <- client.athletes.getLoggedInAthlete()
  *       activities <- client.activities.getLoggedInAthleteActivities()
- *     } yield (athlete, activities)
+ *     yield (athlete, activities)
  *   }
  * }}}
  */
@@ -40,7 +40,7 @@ class StravaClient[F[_]] private (
   val auth: AuthManager[F]
 )
 
-object StravaClient {
+object StravaClient:
   /**
    * Create a Strava client as a Resource (recommended)
    * The Resource will manage the HTTP backend lifecycle
@@ -48,12 +48,11 @@ object StravaClient {
   def resource[F[_]](
     config: StravaConfig,
     tokenFile: File
-  )(implicit A: Async[F]): Resource[F, StravaClient[F]] = {
-    for {
+  )(using A: Async[F]): Resource[F, StravaClient[F]] =
+    for
       backend <- HttpClientCatsBackend.resource[F]()
       client <- Resource.eval(create[F](config, tokenFile, backend))
-    } yield client
-  }
+    yield client
 
   /**
    * Create a Strava client with a custom backend
@@ -62,12 +61,12 @@ object StravaClient {
     config: StravaConfig,
     tokenFile: File,
     backend: SttpBackend[F, Any]
-  )(implicit A: Async[F]): F[StravaClient[F]] = {
-    for {
+  )(using A: Async[F]): F[StravaClient[F]] =
+    for
       tokenStorage <- A.delay(TokenStorage.file[F](tokenFile))
-      rateLimiter <- if (config.enableRateLimiting) RateLimiter.create[F] 
+      rateLimiter <- if config.enableRateLimiting then RateLimiter.create[F] 
                      else A.pure(RateLimiter.noop[F])
-    } yield {
+    yield
       val authManager = AuthManager[F](config, tokenStorage, backend)
       val httpClient = HttpClient[F](config, authManager, rateLimiter, backend)
       
@@ -77,7 +76,7 @@ object StravaClient {
       val clubsApi = ClubsApi[F](httpClient)
       val streamsApi = StreamsApi[F](httpClient)
       
-      new StravaClient[F](
+      StravaClient[F](
         activitiesApi,
         athletesApi,
         segmentsApi,
@@ -85,34 +84,29 @@ object StravaClient {
         streamsApi,
         authManager
       )
-    }
-  }
 
   /**
    * Create a client from environment variables
    */
-  def fromEnv[F[_]](tokenFile: File)(implicit A: Async[F]): F[Either[StravaError, StravaClient[F]]] = {
-    StravaConfig.fromEnv() match {
+  def fromEnv[F[_]](tokenFile: File)(using A: Async[F]): F[Either[StravaError, StravaClient[F]]] =
+    StravaConfig.fromEnv() match
       case Right(config) =>
-        resource[F](config, tokenFile).use { client =>
+        resource[F](config, tokenFile).use: client =>
           A.pure(Right(client))
-        }
       case Left(error) =>
         A.pure(Left(error))
-    }
-  }
 
   /**
    * Helper to create a client with in-memory token storage (for testing)
    */
   def withInMemoryStorage[F[_]](
     config: StravaConfig
-  )(implicit A: Async[F]): Resource[F, StravaClient[F]] = {
-    for {
+  )(using A: Async[F]): Resource[F, StravaClient[F]] =
+    for
       backend <- HttpClientCatsBackend.resource[F]()
       tokenStorage <- Resource.eval(TokenStorage.inMemory[F])
       rateLimiter <- Resource.eval(
-        if (config.enableRateLimiting) RateLimiter.create[F]
+        if config.enableRateLimiting then RateLimiter.create[F]
         else A.pure(RateLimiter.noop[F])
       )
       authManager = AuthManager[F](config, tokenStorage, backend)
@@ -123,7 +117,7 @@ object StravaClient {
       segmentsApi = SegmentsApi[F](httpClient)
       clubsApi = ClubsApi[F](httpClient)
       streamsApi = StreamsApi[F](httpClient)
-    } yield new StravaClient[F](
+    yield StravaClient[F](
       activitiesApi,
       athletesApi,
       segmentsApi,
@@ -131,5 +125,3 @@ object StravaClient {
       streamsApi,
       authManager
     )
-  }
-}

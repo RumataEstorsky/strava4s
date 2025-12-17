@@ -18,6 +18,8 @@ case class PolylineMap(
   /* The polyline of the map, only returned on detailed representation of an object */
   polyline: Option[String] = None,
   /* The summary polyline of the map */
-  summary_polyline: Option[String] = None
+  summary_polyline: Option[String] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None
 )
 

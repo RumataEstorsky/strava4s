@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class RouteSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-route-getroutebyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val route = parsed.value.asObject.get
     
@@ -124,7 +124,7 @@ class RouteSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-athlete-routes-getroutesbyathleteid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val routes = parsed.value.asArray.get
     routes.foreach { route =>

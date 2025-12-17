@@ -1,14 +1,14 @@
 package strava.auth
 
-import io.circe.parser._
-import io.circe.syntax._
+import io.circe.parser.*
+import io.circe.syntax.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
 
 import java.time.Instant
 
-class StravaTokenSpec extends AnyFlatSpec with Matchers with EitherValues {
+class StravaTokenSpec extends AnyFlatSpec with Matchers with EitherValues:
 
   "StravaToken" should "detect expired tokens" in {
     val expiredToken = StravaToken(
@@ -59,8 +59,8 @@ class StravaTokenSpec extends AnyFlatSpec with Matchers with EitherValues {
       }
     """
     
-    val result = decode[StravaToken](json)(StravaToken.decoderFromApi)
-    result shouldBe a[Right[_, _]]
+    val result = decode[StravaToken](json)(using StravaToken.decoderFromApi)
+    result.isRight shouldBe true
     
     val token = result.value
     token.tokenType shouldBe "Bearer"
@@ -82,5 +82,3 @@ class StravaTokenSpec extends AnyFlatSpec with Matchers with EitherValues {
     timeRemaining should be > 3500L
     timeRemaining should be <= 3600L
   }
-}
-

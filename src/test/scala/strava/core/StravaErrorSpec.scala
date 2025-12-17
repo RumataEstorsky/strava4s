@@ -3,7 +3,7 @@ package strava.core
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class StravaErrorSpec extends AnyFlatSpec with Matchers {
+class StravaErrorSpec extends AnyFlatSpec with Matchers:
 
   "StravaError" should "have meaningful error messages" in {
     val httpError = StravaError.HttpError(404, "Not found", Some("Resource missing"))
@@ -40,5 +40,3 @@ class StravaErrorSpec extends AnyFlatSpec with Matchers {
     validationError.errors should have size 2
     validationError.errors("name") shouldBe "Name is required"
   }
-}
-

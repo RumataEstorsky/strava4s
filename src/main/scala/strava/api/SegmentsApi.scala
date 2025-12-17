@@ -1,34 +1,32 @@
 package strava.api
 
 import cats.effect.Sync
-import io.circe.generic.auto._
 import strava.core.StravaError
 import strava.http.HttpClient
-import strava.models._
-import strava.models.api._
+import strava.models.api.*
+import strava.models.given
+import strava.models.api.codecs.given
 
 /**
  * API for segment-related endpoints
  */
-class SegmentsApi[F[_]: Sync](httpClient: HttpClient[F]) {
+class SegmentsApi[F[_]](httpClient: HttpClient[F])(using F: Sync[F]):
 
   /**
    * Get segment by ID
    * @param id Segment ID
    */
-  def getSegmentById(id: Long): F[Either[StravaError, DetailedSegment]] = {
+  def getSegmentById(id: Long): F[Either[StravaError, DetailedSegment]] =
     httpClient.get[DetailedSegment](s"segments/$id")
-  }
 
   /**
    * Star a segment
    * @param id Segment ID
    * @param starred Whether to star or unstar
    */
-  def starSegment(id: Long, starred: Boolean = true): F[Either[StravaError, DetailedSegment]] = {
+  def starSegment(id: Long, starred: Boolean = true): F[Either[StravaError, DetailedSegment]] =
     val params = Map("starred" -> starred.toString)
     httpClient.put[DetailedSegment, Map[String, String]](s"segments/$id/starred", params)
-  }
 
   /**
    * Get starred segments for logged-in athlete
@@ -38,10 +36,9 @@ class SegmentsApi[F[_]: Sync](httpClient: HttpClient[F]) {
   def getLoggedInAthleteStarredSegments(
     page: Int = 1,
     perPage: Int = 30
-  ): F[Either[StravaError, List[SummarySegment]]] = {
+  ): F[Either[StravaError, List[SummarySegment]]] =
     val params = Map("page" -> page.toString, "per_page" -> perPage.toString)
     httpClient.get[List[SummarySegment]]("segments/starred", params)
-  }
 
   /**
    * Explore segments
@@ -55,7 +52,7 @@ class SegmentsApi[F[_]: Sync](httpClient: HttpClient[F]) {
     activityType: Option[String] = None,
     minCat: Option[Int] = None,
     maxCat: Option[Int] = None
-  ): F[Either[StravaError, ExplorerResponse]] = {
+  ): F[Either[StravaError, ExplorerResponse]] =
     val (swLat, swLng, neLat, neLng) = bounds
     val params = Map(
       "bounds" -> s"$swLat,$swLng,$neLat,$neLng"
@@ -64,15 +61,13 @@ class SegmentsApi[F[_]: Sync](httpClient: HttpClient[F]) {
       maxCat.map(c => "max_cat" -> c.toString)
 
     httpClient.get[ExplorerResponse]("segments/explore", params)
-  }
 
   /**
    * Get segment effort by ID
    * @param id Effort ID
    */
-  def getSegmentEffortById(id: Long): F[Either[StravaError, DetailedSegmentEffort]] = {
+  def getSegmentEffortById(id: Long): F[Either[StravaError, DetailedSegmentEffort]] =
     httpClient.get[DetailedSegmentEffort](s"segment_efforts/$id")
-  }
 
   /**
    * Get efforts by segment ID
@@ -84,18 +79,14 @@ class SegmentsApi[F[_]: Sync](httpClient: HttpClient[F]) {
     segmentId: Long,
     page: Int = 1,
     perPage: Int = 30
-  ): F[Either[StravaError, List[DetailedSegmentEffort]]] = {
+  ): F[Either[StravaError, List[DetailedSegmentEffort]]] =
     val params = Map(
       "segment_id" -> segmentId.toString,
       "page" -> page.toString,
       "per_page" -> perPage.toString
     )
     httpClient.get[List[DetailedSegmentEffort]](s"segments/$segmentId/all_efforts", params)
-  }
-}
 
-object SegmentsApi {
+object SegmentsApi:
   def apply[F[_]: Sync](httpClient: HttpClient[F]): SegmentsApi[F] =
     new SegmentsApi[F](httpClient)
-}
-

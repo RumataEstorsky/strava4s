@@ -1,7 +1,7 @@
 package examples
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
+import cats.syntax.all.*
 import strava.StravaClient
 import strava.core.StravaConfig
 import java.io.File
@@ -10,24 +10,24 @@ import java.io.File
  * Explore and discover popular segments in your area.
  * Find challenging climbs, fast sprints, and see your starred segments.
  */
-object SegmentExplorerExample extends IOApp {
+object SegmentExplorerExample extends IOApp:
 
-  def run(args: List[String]): IO[ExitCode] = {
+  def run(args: List[String]): IO[ExitCode] =
     val config = StravaConfig(
       clientId = sys.env.getOrElse("STRAVA_CLIENT_ID", "your-client-id"),
       clientSecret = sys.env.getOrElse("STRAVA_CLIENT_SECRET", "your-client-secret")
     )
-    val tokenFile = new File("strava-token.json")
+    val tokenFile = File("strava-token.json")
 
-    StravaClient.resource[IO](config, tokenFile).use { client =>
-      for {
+    StravaClient.resource[IO](config, tokenFile).use: client =>
+      for
         _ <- IO.println("=== Segment Explorer ===\n")
         
         // Get your starred segments
         _ <- IO.println("Your Starred Segments:\n")
         starredResult <- client.segments.getLoggedInAthleteStarredSegments(perPage = 20)
         
-        _ <- starredResult match {
+        _ <- starredResult match
           case Right(segments) if segments.nonEmpty =>
             segments.take(10).zipWithIndex.traverse_ { case (segment, idx) =>
               val name = segment.name.getOrElse("Unnamed")
@@ -37,15 +37,13 @@ object SegmentExplorerExample extends IOApp {
               
               IO.println(f"${idx + 1}%2d. $name") >>
               IO.println(f"    Distance: $distance, Elevation: $elevation, Grade: $avgGrade")
-            } >>
-            IO.println("")
+            } >> IO.println("")
             
           case Right(_) =>
             IO.println("  No starred segments yet. Star some segments to see them here!\n")
             
           case Left(error) =>
             IO.println(s"  Error: ${error.message}\n")
-        }
         
         // Example: Explore segments in a specific area (San Francisco)
         _ <- IO.println("Exploring Segments (Example: San Francisco):\n")
@@ -59,9 +57,9 @@ object SegmentExplorerExample extends IOApp {
           maxCat = Some(5)
         )
         
-        _ <- exploreResult match {
+        _ <- exploreResult match
           case Right(explore) =>
-            explore.segments match {
+            explore.segments match
               case Some(segments) if segments.nonEmpty =>
                 segments.take(5).zipWithIndex.traverse_ { case (segment, idx) =>
                   val name = segment.name.getOrElse("Unnamed")
@@ -71,26 +69,23 @@ object SegmentExplorerExample extends IOApp {
                   
                   IO.println(f"${idx + 1}%2d. $name") >>
                   IO.println(f"    Distance: $distance, Grade: $avgGrade, Category: $climbCategory")
-                } >>
-                IO.println("")
+                } >> IO.println("")
               case _ =>
                 IO.println("  No segments found in this area\n")
-            }
             
           case Left(error) =>
             IO.println(s"  Error: ${error.message}\n")
-        }
         
         // Get details of first starred segment
-        _ <- starredResult match {
+        _ <- starredResult match
           case Right(segments) if segments.nonEmpty =>
-            segments.headOption.flatMap(_.id) match {
+            segments.headOption.flatMap(_.id) match
               case Some(segmentId) =>
-                for {
+                for
                   _ <- IO.println(s"Segment Details (ID: $segmentId):\n")
                   detailsResult <- client.segments.getSegmentById(segmentId)
                   
-                  _ <- detailsResult match {
+                  _ <- detailsResult match
                     case Right(segment) =>
                       IO.println(s"  Name: ${segment.name.getOrElse("Unnamed")}") >>
                       IO.println(s"  Distance: ${segment.distance.map(d => f"${d / 1000}%.2f km").getOrElse("N/A")}") >>
@@ -102,12 +97,9 @@ object SegmentExplorerExample extends IOApp {
                       
                     case Left(error) =>
                       IO.println(s"  Error: ${error.message}")
-                  }
-                } yield ()
+                yield ()
               case None => IO.unit
-            }
           case _ => IO.unit
-        }
         
         _ <- IO.println("")
         _ <- IO.println("Tips:")
@@ -115,7 +107,5 @@ object SegmentExplorerExample extends IOApp {
         _ <- IO.println("  • Star segments to track your progress on them")
         _ <- IO.println("  • Check segment leaderboards to see how you compare")
         
-      } yield ()
-    }.as(ExitCode.Success)
-  }
-}
+      yield ()
+    .as(ExitCode.Success)

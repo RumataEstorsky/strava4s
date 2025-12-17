@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class UploadSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("upload-activity-createupload.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val upload = parsed.value.asObject.get
     
@@ -72,7 +72,7 @@ class UploadSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-upload-getuploadbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val upload = parsed.value.asObject.get
     upload("id") shouldBe defined

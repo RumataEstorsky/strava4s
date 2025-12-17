@@ -9,7 +9,7 @@ import java.io.File
 import java.nio.file.Files
 import java.time.Instant
 
-class TokenStorageSpec extends AsyncFlatSpec with AsyncIOSpec with Matchers {
+class TokenStorageSpec extends AsyncFlatSpec with AsyncIOSpec with Matchers:
 
   "InMemory TokenStorage" should "store and retrieve tokens" in {
     val token = StravaToken(
@@ -20,19 +20,16 @@ class TokenStorageSpec extends AsyncFlatSpec with AsyncIOSpec with Matchers {
       refreshToken = "refresh-token"
     )
 
-    (for {
+    (for
       storage <- TokenStorage.inMemory[IO]
       _ <- storage.save(token)
       retrieved <- storage.load()
-    } yield {
-      retrieved shouldBe Some(token)
-    }).asserting(identity)
+    yield retrieved shouldBe Some(token)).asserting(identity)
   }
 
   it should "return None when no token is stored" in {
-    TokenStorage.inMemory[IO].flatMap(_.load()).asserting { result =>
+    TokenStorage.inMemory[IO].flatMap(_.load()).asserting: result =>
       result shouldBe None
-    }
   }
 
   it should "overwrite existing token" in {
@@ -52,15 +49,15 @@ class TokenStorageSpec extends AsyncFlatSpec with AsyncIOSpec with Matchers {
       refreshToken = "refresh-2"
     )
 
-    (for {
+    (for
       storage <- TokenStorage.inMemory[IO]
       _ <- storage.save(token1)
       _ <- storage.save(token2)
       retrieved <- storage.load()
-    } yield {
+    yield
       retrieved shouldBe Some(token2)
       retrieved.get.accessToken shouldBe "token-2"
-    }).asserting(identity)
+    ).asserting(identity)
   }
 
   "File TokenStorage" should "persist and retrieve tokens from file" in {
@@ -77,22 +74,17 @@ class TokenStorageSpec extends AsyncFlatSpec with AsyncIOSpec with Matchers {
 
     val storage = TokenStorage.file[IO](tempFile)
 
-    (for {
+    (for
       _ <- storage.save(token)
       retrieved <- storage.load()
       _ = tempFile.delete()
-    } yield {
-      retrieved shouldBe Some(token)
-    }).asserting(identity)
+    yield retrieved shouldBe Some(token)).asserting(identity)
   }
 
   it should "return None when file doesn't exist" in {
-    val nonExistentFile = new File("/tmp/non-existent-token-file.json")
+    val nonExistentFile = File("/tmp/non-existent-token-file.json")
     val storage = TokenStorage.file[IO](nonExistentFile)
 
-    storage.load().asserting { result =>
+    storage.load().asserting: result =>
       result shouldBe None
-    }
   }
-}
-

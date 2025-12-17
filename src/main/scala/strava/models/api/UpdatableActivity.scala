@@ -11,9 +11,6 @@
  */
 package strava.models.api
 
-import strava.models.api.ActivityType._
-import strava.models.api.SportType._
-
 case class UpdatableActivity(
   /* Whether this activity is a commute */
   commute: Option[Boolean] = None,

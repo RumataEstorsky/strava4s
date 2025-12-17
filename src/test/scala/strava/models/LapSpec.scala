@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -17,7 +17,7 @@ class LapSpec extends AnyFlatSpec with Matchers with EitherValues {
     
     // Parse as generic JSON
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val laps = parsed.value.asArray.get
     laps should have size 1
@@ -70,6 +70,30 @@ class LapSpec extends AnyFlatSpec with Matchers with EitherValues {
       obj("distance") shouldBe defined
       obj("athlete") shouldBe defined
       obj("activity") shouldBe defined
+    }
+  }
+
+  it should "contain resource_state field" in {
+    val json = Source.fromResource("laps.json").mkString
+    val parsed = parse(json).value
+    val laps = parsed.asArray.get
+
+    laps.foreach { lap =>
+      val obj = lap.asObject.get
+      obj("resource_state").flatMap(_.asNumber).flatMap(_.toInt) shouldBe Some(2)
+    }
+  }
+
+  it should "contain device_watts and average_watts fields" in {
+    val json = Source.fromResource("laps.json").mkString
+    val parsed = parse(json).value
+    val laps = parsed.asArray.get
+
+    laps.foreach { lap =>
+      val obj = lap.asObject.get
+      obj("device_watts").flatMap(_.asBoolean) shouldBe Some(true)
+      obj("average_watts") shouldBe defined
+      obj("average_watts").flatMap(_.asNumber).map(_.toFloat).get should be > 0f
     }
   }
 }

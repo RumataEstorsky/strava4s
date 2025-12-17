@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-activity-getactivitybyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activity = parsed.value.asObject.get
     
@@ -144,6 +144,34 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     activity("private") shouldBe defined
     activity("flagged") shouldBe defined
     activity("has_kudoed") shouldBe defined
+    activity("from_accepted_tag") shouldBe defined
+  }
+
+  it should "contain heartrate and temperature fields" in {
+    val json = loadJson("get-activity-getactivitybyid.json")
+    val parsed = parse(json).value
+    val activity = parsed.asObject.get
+
+    activity("has_heartrate") shouldBe defined
+    activity("average_temp") shouldBe defined
+  }
+
+  it should "contain pr_count and suffer_score fields" in {
+    val json = loadJson("get-activity-getactivitybyid.json")
+    val parsed = parse(json).value
+    val activity = parsed.asObject.get
+
+    activity("pr_count").flatMap(_.asNumber).flatMap(_.toInt) shouldBe Some(0)
+    activity("suffer_score") shouldBe defined
+  }
+
+  it should "contain leaderboard opt-out flags" in {
+    val json = loadJson("get-activity-getactivitybyid.json")
+    val parsed = parse(json).value
+    val activity = parsed.asObject.get
+
+    activity("segment_leaderboard_opt_out") shouldBe defined
+    activity("leaderboard_opt_out") shouldBe defined
   }
 
   it should "contain location information" in {
@@ -159,7 +187,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("create-an-activity-createactivity.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activity = parsed.value.asObject.get
     activity("id") shouldBe defined
@@ -173,7 +201,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("update-activity-updateactivitybyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activity = parsed.value.asObject.get
     activity("id") shouldBe defined
@@ -184,7 +212,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-athlete-activities-getloggedinathleteactivities.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activities = parsed.value.asArray.get
     activities should have size 2
@@ -221,6 +249,29 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
       obj("type") shouldBe defined
       obj("start_date") shouldBe defined
       obj("athlete") shouldBe defined
+    }
+  }
+
+  it should "contain new SummaryActivity fields" in {
+    val json = loadJson("list-athlete-activities-getloggedinathleteactivities.json")
+    val parsed = parse(json).value
+    val activities = parsed.asArray.get
+
+    activities.foreach { activity =>
+      val obj = activity.asObject.get
+
+      // New fields added in v1.1.0
+      obj("resource_state") shouldBe defined
+      obj("sport_type") shouldBe defined
+      obj("utc_offset") shouldBe defined
+      obj("location_country") shouldBe defined
+      obj("from_accepted_tag") shouldBe defined
+      obj("average_cadence") shouldBe defined
+      obj("has_heartrate") shouldBe defined
+      obj("average_heartrate") shouldBe defined
+      obj("max_heartrate") shouldBe defined
+      obj("pr_count") shouldBe defined
+      obj("suffer_score") shouldBe defined
     }
   }
 
@@ -294,7 +345,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-activity-comments-getcommentsbyactivityid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val comments = parsed.value.asArray.get
     comments.foreach { comment =>
@@ -311,7 +362,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-activity-kudoers-getkudoersbyactivityid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val kudoers = parsed.value.asArray.get
     kudoers.foreach { athlete =>
@@ -325,7 +376,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-activity-laps-getlapsbyactivityid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val laps = parsed.value.asArray.get
     laps should have size 1
@@ -345,7 +396,7 @@ class ActivityDetailedSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-activity-zones-getzonesbyactivityid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val zones = parsed.value.asArray.get
     zones.foreach { zone =>

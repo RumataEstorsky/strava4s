@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     
     // Parse as generic JSON first to verify structure
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val jsonArray = parsed.value.asArray
     jsonArray shouldBe defined
@@ -39,7 +39,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-activity-getactivitybyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activity = parsed.value.asObject.get
     activity("id").flatMap(_.asNumber).flatMap(_.toLong) shouldBe Some(12345678987654321L)
@@ -58,7 +58,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-authenticated-athlete-getloggedinathlete.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val athlete = parsed.value.asObject.get
     athlete("id").flatMap(_.asNumber).flatMap(_.toLong) shouldBe Some(1234567890987654321L)
@@ -72,7 +72,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-activity-laps-getlapsbyactivityid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val laps = parsed.value.asArray.get
     laps should have size 1
@@ -95,7 +95,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     """
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activity = parsed.value.asObject.get
     activity("id").flatMap(_.asNumber).flatMap(_.toLong) shouldBe Some(123456L)
@@ -115,7 +115,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     """
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val athlete = parsed.value.asObject.get
     athlete("id").flatMap(_.asNumber).flatMap(_.toInt) shouldBe Some(789)
@@ -132,7 +132,7 @@ class JsonParsingSpec extends AnyFlatSpec with Matchers with EitherValues {
     """
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activities = parsed.value.asArray.get
     activities should have size 2

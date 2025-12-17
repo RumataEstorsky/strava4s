@@ -11,9 +11,6 @@
  */
 package strava.models.api
 
-import strava.models.api.ActivityType._
-import strava.models.api.SportType._
-
 case class ClubActivity(
   athlete: Option[MetaAthlete] = None,
   /* The name of the activity */

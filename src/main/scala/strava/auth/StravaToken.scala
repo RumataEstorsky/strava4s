@@ -1,7 +1,7 @@
 package strava.auth
 
 import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto._
+import io.circe.generic.semiauto.*
 
 import java.time.Instant
 
@@ -20,38 +20,28 @@ case class StravaToken(
   expiresAt: Long,
   expiresIn: Int,
   refreshToken: String
-) {
-  /**
-   * Check if the token is expired (with a 5-minute buffer)
-   */
-  def isExpired: Boolean = {
+):
+  /** Check if the token is expired (with a 5-minute buffer) */
+  def isExpired: Boolean =
     val now = Instant.now().getEpochSecond
     val buffer = 300 // 5 minutes
     now >= (expiresAt - buffer)
-  }
 
-  /**
-   * Time remaining until expiration in seconds
-   */
-  def timeUntilExpiration: Long = {
+  /** Time remaining until expiration in seconds */
+  def timeUntilExpiration: Long =
     expiresAt - Instant.now().getEpochSecond
-  }
-}
 
-object StravaToken {
+object StravaToken:
   // Circe codecs for JSON serialization
-  implicit val decoder: Decoder[StravaToken] = deriveDecoder[StravaToken]
-  implicit val encoder: Encoder[StravaToken] = deriveEncoder[StravaToken]
+  given decoder: Decoder[StravaToken] = deriveDecoder[StravaToken]
+  given encoder: Encoder[StravaToken] = deriveEncoder[StravaToken]
 
   // Field name mappings for API responses
-  implicit val decoderFromApi: Decoder[StravaToken] = Decoder.instance { cursor =>
-    for {
+  given decoderFromApi: Decoder[StravaToken] = Decoder.instance: cursor =>
+    for
       tokenType <- cursor.get[String]("token_type")
       accessToken <- cursor.get[String]("access_token")
       expiresAt <- cursor.get[Long]("expires_at")
       expiresIn <- cursor.get[Int]("expires_in")
       refreshToken <- cursor.get[String]("refresh_token")
-    } yield StravaToken(tokenType, accessToken, expiresAt, expiresIn, refreshToken)
-  }
-}
-
+    yield StravaToken(tokenType, accessToken, expiresAt, expiresIn, refreshToken)

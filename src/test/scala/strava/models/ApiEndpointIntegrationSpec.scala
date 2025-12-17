@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -11,64 +11,63 @@ import scala.io.Source
  * Comprehensive integration tests for all API endpoint responses
  * This suite verifies that all JSON responses from Strava API endpoints can be parsed correctly
  */
-class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherValues {
+class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherValues:
 
-  private def loadJson(filename: String): String = {
+  private def loadJson(filename: String): String =
     val source = Source.fromResource(s"strava/$filename")
     try source.mkString finally source.close()
-  }
 
   "Activity endpoints" should "parse all activity-related responses" in {
     // List athlete activities
     val listActivities = loadJson("list-athlete-activities-getloggedinathleteactivities.json")
     val parsedList = parse(listActivities)
-    parsedList shouldBe a[Right[_, _]]
+    parsedList.isRight shouldBe true
     parsedList.value.asArray shouldBe defined
     
     // Get activity by ID
     val getActivity = loadJson("get-activity-getactivitybyid.json")
     val parsedGet = parse(getActivity)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
     
     // Create activity
     val createActivity = loadJson("create-an-activity-createactivity.json")
     val parsedCreate = parse(createActivity)
-    parsedCreate shouldBe a[Right[_, _]]
+    parsedCreate.isRight shouldBe true
     
     // Update activity
     val updateActivity = loadJson("update-activity-updateactivitybyid.json")
     val parsedUpdate = parse(updateActivity)
-    parsedUpdate shouldBe a[Right[_, _]]
+    parsedUpdate.isRight shouldBe true
   }
 
   "Athlete endpoints" should "parse all athlete-related responses" in {
     // Get authenticated athlete
     val getAthlete = loadJson("get-authenticated-athlete-getloggedinathlete.json")
     val parsedGet = parse(getAthlete)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
     
     // Update athlete
     val updateAthlete = loadJson("update-athlete-updateloggedinathlete.json")
     val parsedUpdate = parse(updateAthlete)
-    parsedUpdate shouldBe a[Right[_, _]]
+    parsedUpdate.isRight shouldBe true
     
     // Get athlete stats
     val getStats = loadJson("get-athlete-stats-getstats.json")
     val parsedStats = parse(getStats)
-    parsedStats shouldBe a[Right[_, _]]
+    parsedStats.isRight shouldBe true
     
     // List athlete clubs
     val listClubs = loadJson("list-athlete-clubs-getloggedinathleteclubs.json")
     val parsedClubs = parse(listClubs)
-    parsedClubs shouldBe a[Right[_, _]]
+    parsedClubs.isRight shouldBe true
     parsedClubs.value.asArray shouldBe defined
     
     // List athlete routes
     val listRoutes = loadJson("list-athlete-routes-getroutesbyathleteid.json")
     val parsedRoutes = parse(listRoutes)
-    parsedRoutes shouldBe a[Right[_, _]]
+    parsedRoutes.isRight shouldBe true
     parsedRoutes.value.asArray shouldBe defined
   }
 
@@ -76,25 +75,25 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // Get club by ID
     val getClub = loadJson("get-club-getclubbyid.json")
     val parsedGet = parse(getClub)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
     
     // List club members
     val listMembers = loadJson("list-club-members-getclubmembersbyid.json")
     val parsedMembers = parse(listMembers)
-    parsedMembers shouldBe a[Right[_, _]]
+    parsedMembers.isRight shouldBe true
     parsedMembers.value.asArray shouldBe defined
     
     // List club administrators
     val listAdmins = loadJson("list-club-administrators-getclubadminsbyid.json")
     val parsedAdmins = parse(listAdmins)
-    parsedAdmins shouldBe a[Right[_, _]]
+    parsedAdmins.isRight shouldBe true
     parsedAdmins.value.asArray shouldBe defined
     
     // List club activities
     val listActivities = loadJson("list-club-activities-getclubactivitiesbyid.json")
     val parsedActivities = parse(listActivities)
-    parsedActivities shouldBe a[Right[_, _]]
+    parsedActivities.isRight shouldBe true
     parsedActivities.value.asArray shouldBe defined
   }
 
@@ -102,37 +101,37 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // Get segment by ID
     val getSegment = loadJson("get-segment-getsegmentbyid.json")
     val parsedGet = parse(getSegment)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
     
     // Explore segments
     val exploreSegments = loadJson("explore-segments-exploresegments.json")
     val parsedExplore = parse(exploreSegments)
-    parsedExplore shouldBe a[Right[_, _]]
+    parsedExplore.isRight shouldBe true
     
     // List starred segments (returns object, not array)
     val listStarred = loadJson("list-starred-segments-getloggedinathletestarredsegments.json")
     val parsedStarred = parse(listStarred)
-    parsedStarred shouldBe a[Right[_, _]]
+    parsedStarred.isRight shouldBe true
     parsedStarred.value.asObject shouldBe defined
     
     // Star segment
     val starSegment = loadJson("star-segment-starsegment.json")
     val parsedStar = parse(starSegment)
-    parsedStar shouldBe a[Right[_, _]]
+    parsedStar.isRight shouldBe true
   }
 
   "Segment effort endpoints" should "parse all segment effort responses" in {
     // Get segment effort by ID
     val getEffort = loadJson("get-segment-effort-getsegmenteffortbyid.json")
     val parsedGet = parse(getEffort)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
     
     // List segment efforts
     val listEfforts = loadJson("list-segment-efforts-geteffortsbysegmentid.json")
     val parsedList = parse(listEfforts)
-    parsedList shouldBe a[Right[_, _]]
+    parsedList.isRight shouldBe true
     parsedList.value.asArray shouldBe defined
   }
 
@@ -140,7 +139,7 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // Get route by ID
     val getRoute = loadJson("get-route-getroutebyid.json")
     val parsedGet = parse(getRoute)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
   }
 
@@ -148,25 +147,25 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // Get activity streams
     val activityStreams = loadJson("get-activity-streams-getactivitystreams.json")
     val parsedActivity = parse(activityStreams)
-    parsedActivity shouldBe a[Right[_, _]]
+    parsedActivity.isRight shouldBe true
     parsedActivity.value.asArray shouldBe defined
     
     // Get segment streams
     val segmentStreams = loadJson("get-segment-streams-getsegmentstreams.json")
     val parsedSegment = parse(segmentStreams)
-    parsedSegment shouldBe a[Right[_, _]]
+    parsedSegment.isRight shouldBe true
     parsedSegment.value.asArray shouldBe defined
     
     // Get segment effort streams
     val effortStreams = loadJson("get-segment-effort-streams-getsegmenteffortstreams.json")
     val parsedEffort = parse(effortStreams)
-    parsedEffort shouldBe a[Right[_, _]]
+    parsedEffort.isRight shouldBe true
     parsedEffort.value.asArray shouldBe defined
     
     // Get route streams
     val routeStreams = loadJson("get-route-streams-getroutestreams.json")
     val parsedRoute = parse(routeStreams)
-    parsedRoute shouldBe a[Right[_, _]]
+    parsedRoute.isRight shouldBe true
     parsedRoute.value.asArray shouldBe defined
   }
 
@@ -174,25 +173,25 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // Create upload
     val createUpload = loadJson("upload-activity-createupload.json")
     val parsedCreate = parse(createUpload)
-    parsedCreate shouldBe a[Right[_, _]]
+    parsedCreate.isRight shouldBe true
     
     // Get upload by ID
     val getUpload = loadJson("get-upload-getuploadbyid.json")
     val parsedGet = parse(getUpload)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
   }
 
   "Zone endpoints" should "parse all zone responses" in {
     // Get logged in athlete zones
     val getZones = loadJson("get-zones-getloggedinathletezones.json")
     val parsedZones = parse(getZones)
-    parsedZones shouldBe a[Right[_, _]]
+    parsedZones.isRight shouldBe true
     parsedZones.value.asArray shouldBe defined
     
     // Get activity zones
     val activityZones = loadJson("get-activity-zones-getzonesbyactivityid.json")
     val parsedActivity = parse(activityZones)
-    parsedActivity shouldBe a[Right[_, _]]
+    parsedActivity.isRight shouldBe true
     parsedActivity.value.asArray shouldBe defined
   }
 
@@ -200,7 +199,7 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // Get equipment by ID
     val getGear = loadJson("get-equipment-getgearbyid.json")
     val parsedGet = parse(getGear)
-    parsedGet shouldBe a[Right[_, _]]
+    parsedGet.isRight shouldBe true
     parsedGet.value.asObject shouldBe defined
   }
 
@@ -208,13 +207,13 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // List activity comments
     val listComments = loadJson("list-activity-comments-getcommentsbyactivityid.json")
     val parsedComments = parse(listComments)
-    parsedComments shouldBe a[Right[_, _]]
+    parsedComments.isRight shouldBe true
     parsedComments.value.asArray shouldBe defined
     
     // List activity kudoers
     val listKudoers = loadJson("list-activity-kudoers-getkudoersbyactivityid.json")
     val parsedKudoers = parse(listKudoers)
-    parsedKudoers shouldBe a[Right[_, _]]
+    parsedKudoers.isRight shouldBe true
     parsedKudoers.value.asArray shouldBe defined
   }
 
@@ -222,7 +221,7 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
     // List activity laps
     val listLaps = loadJson("list-activity-laps-getlapsbyactivityid.json")
     val parsedLaps = parse(listLaps)
-    parsedLaps shouldBe a[Right[_, _]]
+    parsedLaps.isRight shouldBe true
     parsedLaps.value.asArray shouldBe defined
   }
 
@@ -266,7 +265,7 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
       withClue(s"Parsing $filename: ") {
         val json = loadJson(filename)
         val parsed = parse(json)
-        parsed shouldBe a[Right[_, _]]
+        parsed.isRight shouldBe true
       }
     }
   }
@@ -383,5 +382,3 @@ class ApiEndpointIntegrationSpec extends AnyFlatSpec with Matchers with EitherVa
       }
     }
   }
-}
-

@@ -11,8 +11,6 @@
  */
 package strava.models.api
 
-import strava.models.api.ActivityType._
-
 case class SummaryClub(
   /* The club's unique identifier. */
   id: Option[Long] = None,
@@ -48,14 +46,8 @@ case class SummaryClub(
   url: Option[String] = None
 )
 
-object SummaryClubEnums {
+object SummaryClubEnums:
+  enum SportType:
+    case Cycling, Running, Triathlon, Other
 
-  type SportType = SportType.Value
-  object SportType extends Enumeration {
-    val Cycling = Value("cycling")
-    val Running = Value("running")
-    val Triathlon = Value("triathlon")
-    val Other = Value("other")
-  }
-
-}
+    def value: String = toString.toLowerCase

@@ -11,8 +11,6 @@
  */
 package strava.models.api
 
-import strava.models.api.ActivityType._
-
 case class DetailedClub(
   /* The club's unique identifier. */
   id: Option[Long] = None,
@@ -56,20 +54,13 @@ case class DetailedClub(
   following_count: Option[Int] = None
 )
 
-object DetailedClubEnums {
+object DetailedClubEnums:
+  enum SportType:
+    case Cycling, Running, Triathlon, Other
 
-  type SportType = SportType.Value
-  type Membership = Membership.Value
-  object SportType extends Enumeration {
-    val Cycling = Value("cycling")
-    val Running = Value("running")
-    val Triathlon = Value("triathlon")
-    val Other = Value("other")
-  }
+    def value: String = toString.toLowerCase
 
-  object Membership extends Enumeration {
-    val Member = Value("member")
-    val Pending = Value("pending")
-  }
+  enum Membership:
+    case Member, Pending
 
-}
+    def value: String = toString.toLowerCase

@@ -15,6 +15,8 @@ package strava.models.api
 case class PhotosSummary(
   /* The number of photos */
   count: Option[Int] = None,
-  primary: Option[PhotosSummaryPrimary] = None
+  primary: Option[PhotosSummaryPrimary] = None,
+  /* Whether to use the primary photo */
+  use_primary_photo: Option[Boolean] = None
 )
 

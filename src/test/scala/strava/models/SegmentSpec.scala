@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class SegmentSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-segment-getsegmentbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val segment = parsed.value.asObject.get
     
@@ -138,7 +138,7 @@ class SegmentSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-segment-effort-getsegmenteffortbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val effort = parsed.value.asObject.get
     effort("id") shouldBe defined
@@ -154,7 +154,7 @@ class SegmentSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-segment-efforts-geteffortsbysegmentid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val efforts = parsed.value.asArray.get
     efforts.foreach { effort =>
@@ -170,7 +170,7 @@ class SegmentSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("explore-segments-exploresegments.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val response = parsed.value.asObject.get
     val segments = response("segments").flatMap(_.asArray)
@@ -190,7 +190,7 @@ class SegmentSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("star-segment-starsegment.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val segment = parsed.value.asObject.get
     segment("id") shouldBe defined
@@ -201,7 +201,7 @@ class SegmentSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-starred-segments-getloggedinathletestarredsegments.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     // This endpoint returns a single segment object, not an array
     val segment = parsed.value.asObject.get

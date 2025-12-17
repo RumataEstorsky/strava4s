@@ -3,9 +3,9 @@ package strava.core
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
-class StravaConfigSpec extends AnyFlatSpec with Matchers {
+class StravaConfigSpec extends AnyFlatSpec with Matchers:
 
   "StravaConfig" should "have sensible defaults" in {
     val config = StravaConfig(
@@ -40,7 +40,7 @@ class StravaConfigSpec extends AnyFlatSpec with Matchers {
 
   "StravaConfig.fromEnv" should "load from environment variables" in {
     // This test would need actual env vars set, so we just verify the error case
-    StravaConfig.fromEnv() match {
+    StravaConfig.fromEnv() match
       case Left(StravaError.ConfigurationError(msg)) =>
         msg should include("STRAVA_CLIENT_ID")
       case Right(_) =>
@@ -48,7 +48,4 @@ class StravaConfigSpec extends AnyFlatSpec with Matchers {
         succeed
       case Left(other) =>
         fail(s"Unexpected error: $other")
-    }
   }
-}
-

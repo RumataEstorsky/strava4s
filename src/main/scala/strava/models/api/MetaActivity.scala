@@ -14,6 +14,8 @@ package strava.models.api
 
 case class MetaActivity(
   /* The unique identifier of the activity */
-  id: Option[Long] = None
+  id: Option[Long] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None
 )
 

@@ -1,7 +1,7 @@
 package examples
 
 import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.all._
+import cats.syntax.all.*
 import strava.StravaClient
 import strava.core.StravaConfig
 import java.io.File
@@ -14,17 +14,17 @@ import java.time.ZonedDateTime
  *   - Calculate distance, time, and pace statistics
  *   - Find your longest/fastest activities
  */
-object ActivityAnalysisExample extends IOApp {
+object ActivityAnalysisExample extends IOApp:
 
-  def run(args: List[String]): IO[ExitCode] = {
+  def run(args: List[String]): IO[ExitCode] =
     val config = StravaConfig(
       clientId = sys.env.getOrElse("STRAVA_CLIENT_ID", "your-client-id"),
       clientSecret = sys.env.getOrElse("STRAVA_CLIENT_SECRET", "your-client-secret")
     )
-    val tokenFile = new File("strava-token.json")
+    val tokenFile = File("strava-token.json")
 
-    StravaClient.resource[IO](config, tokenFile).use { client =>
-      for {
+    StravaClient.resource[IO](config, tokenFile).use: client =>
+      for
         _ <- IO.println("=== Activity Analysis ===\n")
         
         // Get last 30 days of activities
@@ -35,9 +35,9 @@ object ActivityAnalysisExample extends IOApp {
           perPage = 200
         )
         
-        _ <- activitiesResult match {
+        _ <- activitiesResult match
           case Right(activities) if activities.nonEmpty =>
-            for {
+            for
               _ <- IO.println(s"Total activities: ${activities.size}\n")
               
               // Calculate totals
@@ -52,17 +52,16 @@ object ActivityAnalysisExample extends IOApp {
               _ <- IO.println("")
               
               // Find longest activity
-              _ <- activities.maxByOption(_.distance.getOrElse(0f)) match {
+              _ <- activities.maxByOption(_.distance.getOrElse(0f)) match
                 case Some(longest) =>
                   IO.println("Longest activity:") >>
                   IO.println(s"  ${longest.name.getOrElse("Unnamed")}") >>
                   IO.println(f"  ${longest.distance.map(_ / 1000).getOrElse(0f)}%.2f km") >>
                   IO.println("")
                 case None => IO.unit
-              }
               
               // Find fastest average speed
-              _ <- activities.maxByOption(_.average_speed.getOrElse(0f)) match {
+              _ <- activities.maxByOption(_.average_speed.getOrElse(0f)) match
                 case Some(fastest) =>
                   val speedKmh: Double = fastest.average_speed.map(_.toDouble * 3.6).getOrElse(0.0)
                   IO.println("Fastest average speed:") >>
@@ -70,7 +69,6 @@ object ActivityAnalysisExample extends IOApp {
                   IO.println(f"  $speedKmh%.1f km/h") >>
                   IO.println("")
                 case None => IO.unit
-              }
               
               // Recent activities table
               _ <- IO.println("Recent activities:")
@@ -84,21 +82,17 @@ object ActivityAnalysisExample extends IOApp {
                 IO.println(s"│ $name │ $distance │ $time │")
               }
               _ <- IO.println("└─────────────────────────────────┴──────────┴──────────┘")
-            } yield ()
+            yield ()
             
           case Right(_) =>
             IO.println("No activities found in the last 30 days.")
             
           case Left(error) =>
             IO.println(s"Error: ${error.message}")
-        }
-      } yield ()
-    }.as(ExitCode.Success)
-  }
+      yield ()
+    .as(ExitCode.Success)
 
-  private def formatDuration(seconds: Int): String = {
+  private def formatDuration(seconds: Int): String =
     val hours = seconds / 3600
     val mins = (seconds % 3600) / 60
-    if (hours > 0) f"${hours}h${mins}%02dm" else f"${mins}m"
-  }
-}
+    if hours > 0 then f"${hours}h${mins}%02dm" else f"${mins}m"

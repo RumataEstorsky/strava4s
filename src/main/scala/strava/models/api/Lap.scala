@@ -16,6 +16,8 @@ import java.time.OffsetDateTime
 case class Lap(
   /* The unique identifier of this lap */
   id: Option[Long] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None,
   activity: Option[MetaActivity] = None,
   athlete: Option[MetaAthlete] = None,
   /* The lap's average cadence */
@@ -46,6 +48,10 @@ case class Lap(
   /* The time at which the lap was started in the local timezone. */
   start_date_local: Option[OffsetDateTime] = None,
   /* The elevation gain of this lap, in meters */
-  total_elevation_gain: Option[Float] = None
+  total_elevation_gain: Option[Float] = None,
+  /* Whether the watts are from a power meter, false if estimated */
+  device_watts: Option[Boolean] = None,
+  /* The lap's average wattage */
+  average_watts: Option[Float] = None
 )
 

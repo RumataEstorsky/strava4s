@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class ClubSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-club-getclubbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val club = parsed.value.asObject.get
     
@@ -101,7 +101,7 @@ class ClubSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-athlete-clubs-getloggedinathleteclubs.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val clubs = parsed.value.asArray.get
     clubs.foreach { club =>
@@ -116,7 +116,7 @@ class ClubSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-club-activities-getclubactivitiesbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val activities = parsed.value.asArray.get
     activities.foreach { activity =>
@@ -133,7 +133,7 @@ class ClubSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-club-administrators-getclubadminsbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val admins = parsed.value.asArray.get
     admins.foreach { admin =>
@@ -148,7 +148,7 @@ class ClubSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-club-members-getclubmembersbyid.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val members = parsed.value.asArray.get
     members.foreach { member =>

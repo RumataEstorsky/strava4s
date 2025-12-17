@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class StreamSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-activity-streams-getactivitystreams.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val streams = parsed.value.asArray.get
     streams should not be empty
@@ -227,7 +227,7 @@ class StreamSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-segment-streams-getsegmentstreams.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val streams = parsed.value.asArray.get
     streams should not be empty
@@ -252,7 +252,7 @@ class StreamSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-segment-effort-streams-getsegmenteffortstreams.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val streams = parsed.value.asArray.get
     streams should not be empty
@@ -262,7 +262,7 @@ class StreamSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-route-streams-getroutestreams.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val streams = parsed.value.asArray.get
     streams should not be empty

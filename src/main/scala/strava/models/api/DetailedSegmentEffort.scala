@@ -12,10 +12,13 @@
 package strava.models.api
 
 import java.time.OffsetDateTime
+import io.circe.Json
 
 case class DetailedSegmentEffort(
   /* The unique identifier of this effort */
   id: Option[Long] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None,
   /* The unique identifier of the activity related to this effort */
   activity_id: Option[Long] = None,
   /* The effort's elapsed time */
@@ -54,6 +57,8 @@ case class DetailedSegmentEffort(
   /* The rank of the effort on the athlete's leaderboard if it belongs in the top 3 at the time of upload */
   pr_rank: Option[Int] = None,
   /* Whether this effort should be hidden when viewed within an activity */
-  hidden: Option[Boolean] = None
+  hidden: Option[Boolean] = None,
+  /* The achievements earned on this effort */
+  achievements: Option[Seq[Json]] = None
 )
 

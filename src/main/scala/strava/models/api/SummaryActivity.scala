@@ -16,6 +16,8 @@ import java.time.OffsetDateTime
 case class SummaryActivity(
   /* The unique identifier of the activity */
   id: Option[Long] = None,
+  /* Resource state, indicates level of detail */
+  resource_state: Option[Int] = None,
   /* The identifier provided at upload time */
   external_id: Option[String] = None,
   /* The identifier of the upload that resulted in this activity */
@@ -35,18 +37,28 @@ case class SummaryActivity(
   elev_high: Option[Float] = None,
   /* The activity's lowest elevation, in meters */
   elev_low: Option[Float] = None,
-//  `type`: Option[ActivityType] = None,
-//  sport_type: Option[SportType] = None,
+  /* The type of the activity */
+  `type`: Option[ActivityType] = None,
+  /* The sport type of the activity */
+  sport_type: Option[SportType] = None,
   /* The time at which the activity was started. */
   start_date: Option[OffsetDateTime] = None,
   /* The time at which the activity was started in the local timezone. */
   start_date_local: Option[OffsetDateTime] = None,
   /* The timezone of the activity */
   timezone: Option[String] = None,
+  /* The offset from UTC time in seconds */
+  utc_offset: Option[Int] = None,
   /* A pair of latitude/longitude coordinates, represented as an array of 2 floating point numbers. */
   start_latlng: Option[Seq[Float]] = None,
   /* A pair of latitude/longitude coordinates, represented as an array of 2 floating point numbers. */
   end_latlng: Option[Seq[Float]] = None,
+  /* The city where the activity started */
+  location_city: Option[String] = None,
+  /* The state where the activity started */
+  location_state: Option[String] = None,
+  /* The country where the activity started */
+  location_country: Option[String] = None,
   /* The number of achievements gained during this activity */
   achievement_count: Option[Int] = None,
   /* The number of kudos given for this activity */
@@ -84,6 +96,8 @@ case class SummaryActivity(
   hide_from_home: Option[Boolean] = None,
   /* The id of the gear for the activity */
   gear_id: Option[String] = None,
+  /* Whether this activity was created from an accepted tag */
+  from_accepted_tag: Option[Boolean] = None,
   /* The total work done in kilojoules during this activity. Rides only */
   kilojoules: Option[Float] = None,
   /* Average power output in watts during this activity. Rides only */
@@ -93,7 +107,19 @@ case class SummaryActivity(
   /* Rides with power meter data only */
   max_watts: Option[Int] = None,
   /* Similar to Normalized Power. Rides with power meter data only */
-  weighted_average_watts: Option[Int] = None
+  weighted_average_watts: Option[Int] = None,
+  /* The activity's average cadence */
+  average_cadence: Option[Float] = None,
+  /* Whether the activity has heartrate data */
+  has_heartrate: Option[Boolean] = None,
+  /* The heart rate of the athlete during this activity */
+  average_heartrate: Option[Float] = None,
+  /* The maximum heart rate of the athlete during this activity */
+  max_heartrate: Option[Float] = None,
+  /* The number of PRs gained during this activity */
+  pr_count: Option[Int] = None,
+  /* The suffer score of the activity */
+  suffer_score: Option[Int] = None
 )
 
 object SummaryActivityEnums {

@@ -1,6 +1,6 @@
 package strava.models
 
-import io.circe.parser._
+import io.circe.parser.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
@@ -22,7 +22,7 @@ class AthleteSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("get-authenticated-athlete-getloggedinathlete.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val athlete = parsed.value.asObject.get
     
@@ -144,7 +144,7 @@ class AthleteSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("update-athlete-updateloggedinathlete.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val athlete = parsed.value.asObject.get
     athlete("id") shouldBe defined
@@ -155,7 +155,7 @@ class AthleteSpec extends AnyFlatSpec with Matchers with EitherValues {
     val json = loadJson("list-athlete-clubs-getloggedinathleteclubs.json")
     
     val parsed = parse(json)
-    parsed shouldBe a[Right[_, _]]
+    parsed .isRight shouldBe true
     
     val clubs = parsed.value.asArray.get
     clubs.foreach { club =>

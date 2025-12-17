@@ -11,17 +11,17 @@ import java.time.format.DateTimeFormatter
  * Generate monthly statistics and compare with previous months.
  * Perfect for tracking your progress over time.
  */
-object MonthlyStatsExample extends IOApp {
+object MonthlyStatsExample extends IOApp:
 
-  def run(args: List[String]): IO[ExitCode] = {
+  def run(args: List[String]): IO[ExitCode] =
     val config = StravaConfig(
       clientId = sys.env.getOrElse("STRAVA_CLIENT_ID", "your-client-id"),
       clientSecret = sys.env.getOrElse("STRAVA_CLIENT_SECRET", "your-client-secret")
     )
-    val tokenFile = new File("strava-token.json")
+    val tokenFile = File("strava-token.json")
 
-    StravaClient.resource[IO](config, tokenFile).use { client =>
-      for {
+    StravaClient.resource[IO](config, tokenFile).use: client =>
+      for
         _ <- IO.println("=== Monthly Statistics Report ===\n")
         
         // Get current month
@@ -44,9 +44,8 @@ object MonthlyStatsExample extends IOApp {
         _ <- IO.println("Month-over-month comparison:\n")
         _ <- compareMonths(currentMonth, previousMonth)
         
-      } yield ()
-    }.as(ExitCode.Success)
-  }
+      yield ()
+    .as(ExitCode.Success)
 
   case class MonthStats(
     monthName: String,
@@ -56,7 +55,7 @@ object MonthlyStatsExample extends IOApp {
     totalElevation: Double
   )
 
-  private def getMonthStats(client: strava.StravaClient[IO], date: ZonedDateTime): IO[MonthStats] = {
+  private def getMonthStats(client: strava.StravaClient[IO], date: ZonedDateTime): IO[MonthStats] =
     val startOfMonth = date.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0)
     val endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1)
     
@@ -64,7 +63,7 @@ object MonthlyStatsExample extends IOApp {
       from = startOfMonth,
       to = endOfMonth,
       perPage = 200
-    ).map {
+    ).map:
       case Right(activities) =>
         val monthName = date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
         val totalDistance = activities.flatMap(_.distance).sum / 1000.0 // km
@@ -75,31 +74,23 @@ object MonthlyStatsExample extends IOApp {
         
       case Left(_) =>
         MonthStats(date.format(DateTimeFormatter.ofPattern("MMMM yyyy")), 0, 0, 0, 0)
-    }
-  }
 
-  private def displayMonthStats(stats: MonthStats): IO[Unit] = {
+  private def displayMonthStats(stats: MonthStats): IO[Unit] =
     IO.println(f"  Activities: ${stats.activityCount}") >>
     IO.println(f"  Distance: ${stats.totalDistance}%.1f km") >>
     IO.println(f"  Time: ${stats.totalTime}%.1f hours") >>
     IO.println(f"  Elevation: ${stats.totalElevation}%.0f m")
-  }
 
-  private def compareMonths(current: MonthStats, previous: MonthStats): IO[Unit] = {
-    def showChange(label: String, curr: Double, prev: Double, unit: String): IO[Unit] = {
-      if (prev == 0) {
-        IO.println(f"  $label: $curr%.1f $unit")
-      } else {
+  private def compareMonths(current: MonthStats, previous: MonthStats): IO[Unit] =
+    def showChange(label: String, curr: Double, prev: Double, unit: String): IO[Unit] =
+      if prev == 0 then IO.println(f"  $label: $curr%.1f $unit")
+      else
         val change = ((curr - prev) / prev * 100)
-        val arrow = if (change > 0) "↑" else if (change < 0) "↓" else "→"
+        val arrow = if change > 0 then "↑" else if change < 0 then "↓" else "→"
         val changeStr = f"${math.abs(change)}%.1f%%"
         IO.println(f"  $label: $curr%.1f $unit ($arrow $changeStr)")
-      }
-    }
     
     showChange("Activities", current.activityCount.toDouble, previous.activityCount.toDouble, "activities") >>
     showChange("Distance", current.totalDistance, previous.totalDistance, "km") >>
     showChange("Time", current.totalTime, previous.totalTime, "hours") >>
     showChange("Elevation", current.totalElevation, previous.totalElevation, "m")
-  }
-}
