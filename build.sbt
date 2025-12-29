@@ -1,9 +1,30 @@
 import Dependencies.*
 
 ThisBuild / scalaVersion     := "3.6.2"
-ThisBuild / version          := "1.2.0"
-ThisBuild / organization     := "valerii.svechikhin"
-ThisBuild / organizationName := "ValeriiSvechikhin"
+ThisBuild / version          := "1.2.1"
+ThisBuild / organization := "io.github.RumataEstorsky"
+ThisBuild / organizationName := "Valerii Svechikhin"
+ThisBuild / description := "Strava Client for Scala"
+ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / homepage := Some(url("https://github.com/RumataEstorsky/strava4s"))
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/RumataEstorsky/strava4s"),
+    "scm:git@github.com:RumataEstorsky/strava4s.git"
+  )
+)
+ThisBuild / developers := List(
+  Developer("RumataEstorsky", "Valerii Svechikhin", "1156209+RumataEstorsky@users.noreply.github.com", url("https://github.com/RumataEstorsky"))
+)
+
+ThisBuild / publishTo := {
+  val nexus = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+  if (isSnapshot.value)
+    Some("snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+  else
+    Some("releases"  at nexus)
+}
+
 
 lazy val root = (project in file("."))
   .settings(

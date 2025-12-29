@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        scala: [ 2.13.18 ]
+        scala: [ 3.6.2 ]
         java: [ 17 ]
 
     steps:
